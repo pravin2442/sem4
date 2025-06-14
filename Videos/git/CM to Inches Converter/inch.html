@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CM to Inches Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e6d9a9;
+        }
+
+        .container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 300px;
+        }
+
+        h2 {
+            color: #f5d776;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #f5d776;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #e6c763;
+        }
+
+        .result {
+            margin-top: 15px;
+            color: white;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>cm to inches</h2>
+        <input type="number" id="cmInput" placeholder="length in cm">
+        <button onclick="convertToInches()">Convert to inches</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function convertToInches() {
+            let cm = document.getElementById("cmInput").value;
+            let inches = cm / 2.54;
+            document.getElementById("result").innerText = cm ? `${cm} cm = ${inches.toFixed(2)} inches` : "Enter a value!";
+        }
+    </script>
+</body>
+</html>

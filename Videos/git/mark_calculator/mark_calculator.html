@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Marks Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      background: white;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin: 15px 0;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .clear-btn {
+      background: #dc3545;
+    }
+
+    .clear-btn:hover {
+      background: #c82333;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 5px;
+      border-left: 4px solid #007bff;
+    }
+
+    .pass {
+      color: green;
+      font-weight: bold;
+    }
+
+    .fail {
+      color: red;
+      font-weight: bold;
+    }
+
+    .grade {
+      font-size: 18px;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .grade-a { background: #d4edda; color: #155724; }
+    .grade-b { background: #d1ecf1; color: #0c5460; }
+    .grade-c { background: #fff3cd; color: #856404; }
+    .grade-d { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Marks Calculator</h1>
+    
+    <div class="input-group">
+      <label for="internal">Internal Marks (out of 50):</label>
+      <input type="number" id="internal" min="0" max="50" placeholder="Enter internal marks">
+    </div>
+
+    <div class="input-group">
+      <label for="external">External Marks (out of 100):</label>
+      <input type="number" id="external" min="0" max="100" placeholder="Enter external marks">
+    </div>
+
+    <button onclick="calculateMarks()">Calculate</button>
+    <button class="clear-btn" onclick="clearForm()">Clear</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function calculateMarks() {
+      const internal = parseFloat(document.getElementById('internal').value);
+      const external = parseFloat(document.getElementById('external').value);
+      const resultDiv = document.getElementById('result');
+
+      // Validation
+      if (isNaN(internal) || isNaN(external)) {
+        resultDiv.innerHTML = '<div class="result"><p style="color: red;">Please enter valid marks!</p></div>';
+        return;
+      }
+
+      if (internal < 0 || internal > 50) {
+        resultDiv.innerHTML = '<div class="result"><p style="color: red;">Internal marks must be between 0 and 50!</p></div>';
+        return;
+      }
+
+      if (external < 0 || external > 100) {
+        resultDiv.innerHTML = '<div class="result"><p style="color: red;">External marks must be between 0 and 100!</p></div>';
+        return;
+      }
+
+      // Calculate total and percentage
+      const total = internal + external;
+      const percentage = (total / 150) * 100;
+      
+      // Determine pass/fail
+      const isPassed = total >= 75;
+      const resultText = isPassed ? 
+        `<span class='pass'>PASS</span>` : 
+        `<span class='fail'>FAIL</span>`;
+
+      // Determine grade
+      let grade = '';
+      let gradeClass = '';
+      
+      if (percentage >= 85) {
+        grade = 'A (Excellent)';
+        gradeClass = 'grade-a';
+      } else if (percentage >= 70) {
+        grade = 'B (Good)';
+        gradeClass = 'grade-b';
+      } else if (percentage >= 50) {
+        grade = 'C (Average)';
+        gradeClass = 'grade-c';
+      } else {
+        grade = 'D (Poor)';
+        gradeClass = 'grade-d';
+      }
+
+      // Display results
+      resultDiv.innerHTML = `
+        <div class="result">
+          <h3>Results:</h3>
+          <p><strong>Internal Marks:</strong> ${internal} / 50</p>
+          <p><strong>External Marks:</strong> ${external} / 100</p>
+          <p><strong>Total Marks:</strong> ${total} / 150</p>
+          <p><strong>Percentage:</strong> ${percentage.toFixed(1)}%</p>
+          <p><strong>Result:</strong> ${resultText}</p>
+          <div class="grade ${gradeClass}">
+            <strong>Grade: ${grade}</strong>
+          </div>
+        </div>
+      `;
+    }
+
+    function clearForm() {
+      document.getElementById('internal').value = '';
+      document.getElementById('external').value = '';
+      document.getElementById('result').innerHTML = '';
+    }
+
+    // Enter key support
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        calculateMarks();
+      }
+    });
+  </script>
+</body>
+</html>

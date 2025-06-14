@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Homepage</title>
+    <style>
+        body {
+            background-color: #202124;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Top Navbar */
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            padding: 15px;
+            align-items: center;
+        }
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            font-size: 14px; 
+        }
+        .top-bar a:hover {
+            text-decoration: underline;
+        }
+
+        /* Google Apps Grid Icon */
+        .google-apps {
+            width: 25px;
+            height: 25px;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        /* User Profile Picture */
+        .user-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Google Logo */
+        .logo {
+            margin-top: 120px;
+        }
+        .logo img {
+            width: 300px;
+        }
+
+        /* Search Bar */
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .search-bar {
+            width: 500px;
+            padding: 10px 40px 10px 15px;
+            font-size: 16px;
+            border-radius: 25px;
+            border: none;
+            outline: none;
+            background-color: #303134;
+            color: white;
+        }
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Shortcut Icons */
+        .icons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .icon {
+            margin: 15px;
+            text-align: center;
+            color: white;
+            width: 80px;
+        }
+        .icon img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #303134;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .icon p {
+            font-size: 14px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navbar (Gmail, Images, Google Apps, Profile) -->
+    <div class="top-bar">
+        <a href="https://mail.google.com/" target="_blank">Gmail</a>
+        <a href="https://www.google.com/imghp" target="_blank">Images</a>
+        <img src="cone.jpeg" class="google-apps" alt="Google Apps">
+        <img src="user.jpeg" class="user-icon" alt="User Profile">
+    </div>
+
+    <!-- Google Logo -->
+    <div class="logo">
+        <img src="one.png" alt="Google Logo">
+    </div>
+
+    <!-- Search Bar with Icon -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <input type="text" class="search-bar" placeholder="Search Google or type a URL">
+            <img src="search.jpeg" class="search-icon" alt="Search">
+        </div>
+    </div>
+
+    <!-- Shortcut Icons -->
+    <div class="icons">
+        <div class="icon">
+            <img src="linked.jpeg" alt="LinkedIn">
+            <p>LinkedIn</p>
+        </div>
+        <div class="icon">
+            <img src="insta.jpeg" alt="Instagram">
+            <p>Instagram</p>
+        </div>
+        <div class="icon">
+            <img src="face.jpeg" alt="Facebook">
+            <p>Facebook</p>
+        </div>
+        <div class="icon">
+            <img src="whats.jpeg" alt="WhatsApp">
+            <p>WhatsApp</p>
+        </div>
+        <div class="icon">
+            <img src="flip.jpeg" alt="Flipkart">
+            <p>Flipkart</p>
+        </div>
+        <div class="icon">
+            <img src="chart.jpeg" alt="ChatGPT">
+            <p>ChatGPT</p>
+        </div>
+    </div>
+
+</body>
+</html>

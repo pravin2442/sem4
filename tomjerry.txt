@@ -1,0 +1,87 @@
+tomjerry
+
+Step 1: Update EC2 & install Java
+
+sudo yum update -y
+sudo amazon-linux-extras install java-openjdk11 -y
+java -version
+
+
+Step 2: Download & Extract Tomcat 9
+
+cd /tmp
+wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.80/bin/apache-tomcat-9.0.80.tar.gz
+tar -xvf apache-tomcat-9.0.80.tar.gz
+sudo mv apache-tomcat-9.0.80 /usr/local/tomcat9
+
+
+Step 3: Give Permissions
+
+sudo chmod +x /usr/local/tomcat9/bin/*.sh
+
+Step 4: Start Tomcat
+
+sudo /usr/local/tomcat9/bin/startup.sh
+
+
+curl http://localhost:8080
+
+
+
+Step 5: Open Port 8080 in Security Group
+
+Go to AWS EC2 console → Instances → Security Groups → Inbound rules
+
+Add rule: Custom TCP → Port 8080 → Source: 0.0.0.0/0
+
+
+
+
+Step 6: Deploy Your App
+
+sudo mkdir /usr/local/tomcat9/webapps/my-app
+sudo nano /usr/local/tomcat9/webapps/my-app/index.jsp
+
+
+<html>
+  <head>
+    <title>My Application</title>
+  </head>
+  <body>
+    <h1>Welcome to my application!</h1>
+  </body>
+</html>
+
+
+Restart Tomcat
+
+sudo /usr/local/tomcat9/bin/shutdown.sh
+sudo /usr/local/tomcat9/bin/startup.sh
+
+
+sudo mv apache-tomcat-9.0.80 /usr/local/tomcat9
+
+sudo /usr/local/tomcat9/bin/startup.sh
+
+
+wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.80/bin/apache-tomcat-9.0.80.tar.gz
+
+
+tar -xvf apache-tomcat-9.0.80.tar.gz
+
+sudo mv apache-tomcat-9.0.80 /usr/local/tomcat9
+
+sudo /usr/local/tomcat9/bin/startup.sh
+
+sudo mkdir /usr/local/tomcat9/webapps/my-app
+
+sudo nano /usr/local/tomcat9/webapps/my-app/index.jsp
+
+<html>
+  <head>
+    <title>My Application</title>
+  </head>
+  <body>
+    <h1>Welcome to my application</h1>
+  </body>
+</html>

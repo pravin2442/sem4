@@ -1,0 +1,190 @@
+using rest api
+The Server 🖥️: A Python script using the Flask framework running on your Windows machine. It will handle the logic for creating, reading, updating, and deleting tasks.
+
+The Client 💻: A Python script using the requests library running on your VM. It will send HTTP requests to the server to manage the to-do list.
+
+for window 
+pip install Flask requests
+
+for Linux
+sudo apt update
+sudo apt install python-is-python3 -y
+
+
+
+server code
+# server.py
+from flask import Flask, request, jsonify
+
+# Initialize the Flask application
+app = Flask(__name__)
+
+# In-memory "database" - a simple list of dictionaries to store tasks
+# In a real app, you would use a database like SQLite or PostgreSQL
+todos = [
+    {"id": 1, "task": "Learn REST APIs", "done": True},
+    {"id": 2, "task": "Build a client-server app", "done": False}
+]
+# A counter to ensure new tasks have unique IDs
+next_id = 3
+
+# --- API Endpoints ---
+
+# GET /todos: Retrieve all tasks
+@app.route('/todos', methods=['GET'])
+def get_todos():
+    """Returns the list of all todo items."""
+    return jsonify(todos)
+
+# POST /todos: Create a new task
+@app.route('/todos', methods=['POST'])
+def add_todo():
+    """Adds a new task to the list."""
+    global next_id
+    if not request.json or 'task' not in request.json:
+        return jsonify({"error": "Missing 'task' in request body"}), 400
+    
+    new_todo = {
+        'id': next_id,
+        'task': request.json['task'],
+        'done': False
+    }
+    todos.append(new_todo)
+    next_id += 1
+    return jsonify(new_todo), 201 # 201 Created status
+
+# PUT /todos/<int:todo_id>: Update an existing task
+@app.route('/todos/<int:todo_id>', methods=['PUT'])
+def update_todo(todo_id):
+    """Updates a task, e.g., to mark it as done."""
+    task = next((t for t in todos if t['id'] == todo_id), None)
+    if task is None:
+        return jsonify({"error": "Task not found"}), 404
+    
+    # Update task text (if provided)
+    task['task'] = request.json.get('task', task['task'])
+    # Update done status (if provided)
+    task['done'] = request.json.get('done', task['done'])
+    
+    return jsonify(task)
+
+# DELETE /todos/<int:todo_id>: Delete a task
+@app.route('/todos/<int:todo_id>', methods=['DELETE'])
+def delete_todo(todo_id):
+    """Deletes a task from the list."""
+    global todos
+    task = next((t for t in todos if t['id'] == todo_id), None)
+    if task is None:
+        return jsonify({"error": "Task not found"}), 404
+    
+    todos = [t for t in todos if t['id'] != todo_id]
+    return jsonify({"result": f"Task {todo_id} deleted successfully"}), 200
+
+# --- Run the App ---
+
+if __name__ == '__main__':
+    # Important: host='0.0.0.0' makes the server accessible from any device on your network
+    # The default '127.0.0.1' would only be accessible from your Windows PC itself.
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
+
+run code 
+python server.py
+
+run port in the 5000
+
+
+# client.py
+import requests
+import json
+
+# IMPORTANT: Replace this with the actual IPv4 address of your Windows PC
+SERVER_IP = "10.10.52.142" # <--- THIS HAS BEEN CHANGED
+SERVER_URL = f"http://{SERVER_IP}:5000"
+
+def get_all_tasks():
+    """Prints all tasks from the server."""
+    try:
+        response = requests.get(f"{SERVER_URL}/todos")
+        response.raise_for_status() # Raise an exception for bad status codes (4xx or 5xx)
+        print("\n--- Current Tasks ---")
+        tasks = response.json()
+        if not tasks:
+            print("No tasks found.")
+        for task in tasks:
+            status = "✅ Done" if task['done'] else "📝 Pending"
+            print(f"ID: {task['id']}, Task: '{task['task']}', Status: {status}")
+        print("---------------------\n")
+    except requests.exceptions.RequestException as e:
+        print(f"\n[Error] Could not connect to the server: {e}")
+
+def add_task():
+    """Prompts user for a new task and sends it to the server."""
+    task_text = input("Enter the new task description: ")
+    if not task_text:
+        print("Task cannot be empty.")
+        return
+    try:
+        response = requests.post(f"{SERVER_URL}/todos", json={"task": task_text})
+        response.raise_for_status()
+        print(f"✅ Success! Added task: {response.json()}")
+    except requests.exceptions.RequestException as e:
+        print(f"\n[Error] Could not add task: {e}")
+
+def update_task():
+    """Prompts for a task ID to mark as complete."""
+    try:
+        task_id = int(input("Enter the ID of the task to mark as complete: "))
+        response = requests.put(f"{SERVER_URL}/todos/{task_id}", json={"done": True})
+        response.raise_for_status()
+        print(f"✅ Success! Updated task: {response.json()}")
+    except ValueError:
+        print("Invalid ID. Please enter a number.")
+    except requests.exceptions.RequestException as e:
+        print(f"\n[Error] Could not update task (check if ID exists): {e}")
+
+def delete_task():
+    """Prompts for a task ID to delete."""
+    try:
+        task_id = int(input("Enter the ID of the task to delete: "))
+        response = requests.delete(f"{SERVER_URL}/todos/{task_id}")
+        response.raise_for_status()
+        print(f"✅ Success! {response.json()['result']}")
+    except ValueError:
+        print("Invalid ID. Please enter a number.")
+    except requests.exceptions.RequestException as e:
+        print(f"\n[Error] Could not delete task (check if ID exists): {e}")
+
+def main():
+    """Main loop for the client application."""
+    while True:
+        print("\nWhat would you like to do?")
+        print("1. List all tasks")
+        print("2. Add a new task")
+        print("3. Mark a task as complete")
+        print("4. Delete a task")
+        print("5. Exit")
+        choice = input("Enter your choice (1-5): ")
+
+        if choice == '1':
+            get_all_tasks()
+        elif choice == '2':
+            add_task()
+        elif choice == '3':
+            update_task()
+        elif choice == '4':
+            delete_task()
+        elif choice == '5':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice, please try again.")
+
+if __name__ == "__main__":
+    main()
+
+
+run program
+
+python client.py
+

@@ -1,0 +1,39 @@
+/* style.css */
+body {
+    font-family: sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+h1 { text-align: center; color: #333; }
+.input-area { display: flex; margin-bottom: 20px; }
+#task-input {
+    flex-grow: 1; padding: 10px; font-size: 16px;
+    border: 2px solid #ddd; border-radius: 5px; margin-right: 10px;
+}
+#add-task-btn {
+    padding: 10px 15px; font-size: 16px; background-color: #007bff;
+    color: white; border: none; border-radius: 5px; cursor: pointer;
+}
+#task-list { list-style: none; padding: 0; }
+.task-item {
+    display: flex; align-items: center; padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+.task-item.done label { text-decoration: line-through; color: #999; }
+.task-item input[type="checkbox"] { margin-right: 12px; width: 18px; height: 18px; }
+.task-item label { flex-grow: 1; font-size: 18px; }
+.delete-btn {
+    background-color: #dc3545; color: white; border: none;
+    border-radius: 5px; padding: 5px 10px; cursor: pointer;
+}

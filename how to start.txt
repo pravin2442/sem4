@@ -1,0 +1,19 @@
+how to start
+
+tomcart
+sudo /usr/local/tomcat9/bin/startup.sh
+http://13.235.215.254:8080/
+
+
+
+backend
+cd todo-api
+ node server.js
+
+frentend
+
+sudo nano /usr/share/nginx/html/app.js
+cd todo-api
+ls
+cd frontend
+python3 -m http.server 8000

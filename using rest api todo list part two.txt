@@ -1,0 +1,232 @@
+using rest api todo list part two 
+
+Install Libraries:
+pip install Flask Flask-CORS
+
+server.py
+
+# server.py
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+# Allow requests from any origin, which is needed for your VM to connect.
+CORS(app)
+
+# In-memory "database"
+todos = [
+    {"id": 1, "task": "Set up the backend server", "done": True},
+    {"id": 2, "task": "Create the website client", "done": False}
+]
+next_id = 3
+
+# --- API Endpoints ---
+
+# GET /todos: Retrieve all tasks
+@app.route('/todos', methods=['GET'])
+def get_todos():
+    return jsonify(todos)
+
+# POST /todos: Create a new task
+@app.route('/todos', methods=['POST'])
+def add_todo():
+    global next_id
+    if not request.json or 'task' not in request.json:
+        return jsonify({"error": "Missing 'task' in request body"}), 400
+
+    new_todo = {
+        'id': next_id,
+        'task': request.json['task'],
+        'done': False
+    }
+    todos.append(new_todo)
+    next_id += 1
+    return jsonify(new_todo), 201
+
+# PUT /todos/<int:todo_id>: Update a task's status
+@app.route('/todos/<int:todo_id>', methods=['PUT'])
+def update_todo(todo_id):
+    task = next((t for t in todos if t['id'] == todo_id), None)
+    if task is None:
+        return jsonify({"error": "Task not found"}), 404
+
+    is_done = request.json.get('done', task['done'])
+    task['done'] = is_done
+    return jsonify(task)
+
+# DELETE /todos/<int:todo_id>: Delete a task
+@app.route('/todos/<int:todo_id>', methods=['DELETE'])
+def delete_todo(todo_id):
+    global todos
+    task_exists = any(t['id'] == todo_id for t in todos)
+    if not task_exists:
+        return jsonify({"error": "Task not found"}), 404
+
+    todos = [t for t in todos if t['id'] != todo_id]
+    return jsonify({"result": True})
+
+# --- Run the App ---
+
+if __name__ == '__main__':
+    # host='0.0.0.0' makes the server accessible from other devices on your network
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
+
+ Step 2: Set Up the Client Website (Virtual Machine)
+
+index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📝 My To-Do List</h1>
+        <div class="input-area">
+            <input type="text" id="task-input" placeholder="Add a new task...">
+            <button id="add-task-btn">Add Task</button>
+        </div>
+        <ul id="task-list">
+            </ul>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+style.css
+/* style.css */
+body {
+    font-family: sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+h1 { text-align: center; color: #333; }
+.input-area { display: flex; margin-bottom: 20px; }
+#task-input {
+    flex-grow: 1; padding: 10px; font-size: 16px;
+    border: 2px solid #ddd; border-radius: 5px; margin-right: 10px;
+}
+#add-task-btn {
+    padding: 10px 15px; font-size: 16px; background-color: #007bff;
+    color: white; border: none; border-radius: 5px; cursor: pointer;
+}
+#task-list { list-style: none; padding: 0; }
+.task-item {
+    display: flex; align-items: center; padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+.task-item.done label { text-decoration: line-through; color: #999; }
+.task-item input[type="checkbox"] { margin-right: 12px; width: 18px; height: 18px; }
+.task-item label { flex-grow: 1; font-size: 18px; }
+.delete-btn {
+    background-color: #dc3545; color: white; border: none;
+    border-radius: 5px; padding: 5px 10px; cursor: pointer;
+}
+
+script.js
+
+// script.js
+
+// !!! IMPORTANT: CHANGE THIS IP ADDRESS !!!
+// Use the local IP address of your Windows machine running the server.
+const SERVER_IP = "YOUR_WINDOWS_IP_ADDRESS";
+const API_URL = `http://${SERVER_IP}:5000/todos`;
+
+const taskList = document.getElementById('task-list');
+const taskInput = document.getElementById('task-input');
+const addTaskBtn = document.getElementById('add-task-btn');
+
+// Fetches all tasks from the server and displays them
+async function fetchTasks() {
+    try {
+        const response = await fetch(API_URL);
+        const tasks = await response.json();
+
+        taskList.innerHTML = ''; // Clear existing list
+        tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.className = 'task-item';
+            if (task.done) li.classList.add('done');
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = task.done;
+            checkbox.onchange = () => updateTask(task.id, checkbox.checked);
+
+            const label = document.createElement('label');
+            label.textContent = task.task;
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.onclick = () => deleteTask(task.id);
+
+            li.appendChild(checkbox);
+            li.appendChild(label);
+            li.appendChild(deleteBtn);
+            taskList.appendChild(li);
+        });
+    } catch (error) {
+        console.error("Failed to fetch tasks:", error);
+        taskList.innerHTML = '<li>Error: Could not connect to the server.</li>';
+    }
+}
+
+// Adds a new task
+async function addTask() {
+    const taskText = taskInput.value.trim();
+    if (taskText === '') return;
+
+    await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task: taskText }),
+    });
+    taskInput.value = '';
+    fetchTasks();
+}
+
+// Updates a task's completion status
+async function updateTask(id, isDone) {
+    await fetch(`${API_URL}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ done: isDone }),
+    });
+    fetchTasks();
+}
+
+// Deletes a task
+async function deleteTask(id) {
+    await fetch(`${API_URL}/${id}`, {
+        method: 'DELETE',
+    });
+    fetchTasks();
+}
+
+// Event listeners
+addTaskBtn.addEventListener('click', addTask);
+taskInput.addEventListener('keypress', (e) => e.key === 'Enter' && addTask());
+
+// Initial load
+fetchTasks();
+
+
+Open the Website on the VM:
+On your VM, open a web browser and open the index.html file. You should see your to-do list, and it will be fully interactive, communicating with the server on your Windows machine.

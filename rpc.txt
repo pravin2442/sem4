@@ -1,0 +1,14 @@
+rpc
+
+how to run that 
+
+server side 
+
+ javac -cp "lib/*" *.java
+java -cp ".;lib/*" WordCountServer
+
+
+client side
+javac -cp "lib/*" WordCountClient.java
+
+java -cp ".:lib/*" WordCountClient

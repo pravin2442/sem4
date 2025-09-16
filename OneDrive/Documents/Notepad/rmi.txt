@@ -1,0 +1,98 @@
+rmi
+
+find ip 
+
+ipconfig
+
+see wifi ipv4
+
+CalcServer.java
+import java.rmi.Naming;
+
+public class CalcServer {
+    public static void main(String[] args) {
+        try {
+            CalcImpl calc = new CalcImpl();
+            // Use your Windows host's Wi-Fi IP address
+            Naming.rebind("rmi://10.10.52.142:5000/calc", calc);
+            System.out.println("RMI Server is running at rmi://10.10.52.142:5000/calc");
+        } catch (Exception e) {
+            System.out.println("Server Exception: " + e);
+        }
+    }
+}
+
+
+CalcClient.java
+import java.rmi.Naming;
+
+public class CalcClient {
+    public static void main(String[] args) {
+        try {
+            // The client looks for the server at the Windows host's IP
+            ICalc calc = (ICalc) Naming.lookup("rmi://10.10.52.142:5000/calc");
+            System.out.println("Addition: " + calc.add(5, 3));
+            System.out.println("Subtraction: " + calc.sub(5, 3));
+            System.out.println("Multiplication: " + calc.mul(5, 3));
+            System.out.println("Division: " + calc.div(5, 3));
+        } catch (Exception e) {
+            System.out.println("Client Exception: " + e);
+        }
+    }
+}
+
+
+
+On the Server (Your Windows Host):
+
+ICalc.java
+
+CalcImpl.java
+
+CalcServer.java
+......................................................................................
+
+On the Client (Your Linux VM):
+
+ICalc.java
+
+CalcClient.java
+
+
+
+
+
+Step 4: Run the Server on Windows
+Configure Windows Firewall: You must allow connections on port 5000.
+
+Go to Control Panel > Windows Defender Firewall > Advanced settings.
+
+Click Inbound Rules > New Rule....
+
+Select Port, then TCP, and specify port 5000.
+
+Select Allow the connection and apply the rule for your network type (Private is usually sufficient).
+
+( Name: Enter a descriptive name. For example: Java RMI Port 5000.
+
+Description (optional): You can add more detail if you like. For example: Allow inbound connections for Java RMI calculator server )
+
+
+
+Compile the code.
+javac *.java
+
+start "C:\Program Files\Java\jdk-24\bin\rmiregistry.exe" 5000
+This will open a new, blank command prompt window, which means the RMI registry is running.
+After that, go back to your original PowerShell window and start your server:
+
+java CalcServer
+
+
+
+
+
+Step 5: Compile and Run the Client on the Linux VM
+
+javac *.java
+java CalcClient

@@ -1,5 +1,188 @@
 multiple instance install todo list 
 
+Part 1: Backend Server Setup (Node.js API)
+
+sudo yum update -y
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash 
+source ~/.nvm/nvm.sh
+nvm install --lts
+mkdir todo-api && cd todo-api
+
+npm init -y
+
+npm install express cors
+nano server.js
+code
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const port = 3000;
+
+app.use(cors());
+app.use(express.json());
+
+let tasks = [
+    { id: 1, text: 'Learn AWS EC2', completed: true },
+    { id: 2, text: 'Setup Backend Server', completed: true },
+    { id: 3, text: 'Setup Frontend Server', completed: false }
+];
+let nextId = 4;
+
+app.get('/tasks', (req, res) => {
+    res.json(tasks);
+});
+
+app.post('/tasks', (req, res) => {
+    const taskText = req.body.text;
+    if (!taskText) {
+        return res.status(400).json({ error: 'Task text cannot be empty.' });
+    }
+    const newTask = {
+        id: nextId++,
+        text: taskText,
+        completed: false
+    };
+    tasks.push(newTask);
+    res.status(201).json(newTask);
+});
+
+app.listen(port, () => {
+    console.log(`Todo API listening at http://localhost:${port}`);
+});
+
+run:
+node server.js
+
+
+
+Part 2: Frontend Server Setup (Nginx)
+ cd /usr/share/nginx/html
+sudo yum update -y
+sudo dnf install nginx -y
+sudo systemctl start nginx
+sudo systemctl enable ngin
+
+sudo nano /usr/share/nginx/html/index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cloud To-Do List</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>My Cloud To-Do List</h1>
+        <div class="form">
+            <input type="text" id="task-input" placeholder="Add a new task...">
+            <button id="add-task-btn">Add Task</button>
+        </div>
+        <ul id="task-list"></ul>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
+ sudo nano /usr/share/nginx/html/style.css
+body { font-family: sans-serif; background-color: #f4f4f4; }
+.container { max-width: 600px; margin: 50px auto; background: #fff; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+h1 { text-align: center; }
+.form { display: flex; margin-bottom: 20px; }
+#task-input { flex-grow: 1; padding: 10px; border: 1px solid #ddd; }
+#add-task-btn { padding: 10px; border: none; background: #337ab7; color: white; cursor: pointer; }
+#task-list { list-style: none; padding: 0; }
+#task-list li { padding: 10px; border-bottom: 1px solid #ddd; }
+ sudo nano /usr/share/nginx/html/app.js
+// !!! IMPORTANT: Replace this IP with your backend server's Public IP !!!
+const BACKEND_URL = 'http://<YOUR_BACKEND_EC2_PUBLIC_IP>:3000';
+
+const taskInput = document.getElementById('task-input');
+const addTaskBtn = document.getElementById('add-task-btn');
+const taskList = document.getElementById('task-list');
+
+async function getTasks() {
+    try {
+        const response = await fetch(`${BACKEND_URL}/tasks`);
+        const tasks = await response.json();
+        taskList.innerHTML = '';
+        tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.textContent = task.text;
+            taskList.appendChild(li);
+        });
+    } catch (error) {
+        console.error('Failed to fetch tasks:', error);
+    }
+}
+
+async function addTask() {
+    const taskText = taskInput.value.trim();
+    if (taskText === '') return;
+
+    try {
+        await fetch(`${BACKEND_URL}/tasks`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: taskText }),
+        });
+        taskInput.value = '';
+        getTasks();
+    } catch (error) {
+        console.error('Failed to add task:', error);
+    }
+}
+
+addTaskBtn.addEventListener('click', addTask);
+document.addEventListener('DOMContentLoaded', getTasks);
+
+sudo systemctl start nginx
+sudo systemctl enable ngin
+
+ sudo systemctl status nginx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Frentend 
 Install and start Nginx
 
